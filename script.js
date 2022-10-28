@@ -105,13 +105,18 @@ function getSaved() {
     renderSaved();
   }
 }
-
+function clearInputs() {
+  rInput.value = "";
+  gInput.value = "";
+  bInput.value = "";
+}
 // Events
 
 getSaved();
 
 previewBtn.addEventListener("click", () => {
   previewColor();
+  clearInputs();
 });
 
 submitBtn.addEventListener(`click`, () => {
