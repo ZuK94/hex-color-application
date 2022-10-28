@@ -1,68 +1,121 @@
-"use-strict";
+// DOM elements
 
-let myFavoriteColor = [];
-let colorValue;
-let isColred = false;
-const redInput = document.getElementById("red-picker");
-const blueInput = document.getElementById("blue-picker");
-const greenInput = document.getElementById("green-picker");
-const btnColor = document.getElementById("change-color");
-const result = document.getElementById("result-div");
-const result2 = document.getElementById("result-div2");
-const favorite = document.getElementById("favorite");
-const showFavorite = document.getElementById("show-favorite");
+const currentColor = document.getElementById("current-color");
+const chosenColor = document.getElementById("chosen-color");
+const currentColorDisplay = document.getElementById("current-color-display");
+const hexDisplay = document.getElementById("color-hex");
+const previousColorDisplay = document.getElementById("previous-color-display");
+const savedDisplay = document.getElementById("user-colors");
+const rInput = document.getElementById("r-input");
+const gInput = document.getElementById("g-input");
+const bInput = document.getElementById("b-input");
+const colorNameInput = document.getElementById("color-name");
+const previewBtn = document.getElementById("preview");
+const submitBtn = document.getElementById("submit");
+let userColors = [];
+let prevColors = [];
 
-function RGBToHex(r, g, b) {
-  r = r.toString(16);
-  g = g.toString(16);
-  b = b.toString(16);
+// Functions
 
-  if (r.length == 1) r = "0" + r;
-  if (g.length == 1) g = "0" + g;
-  if (b.length == 1) b = "0" + b;
+function UserColor(r, g, b, name, hexNum) {
+  this.name = name;
+  this.r = r;
+  this.g = g;
+  this.b = b;
+  this.hexNum = hexNum;
+}
+function renderSaved() {
+  savedDisplay.innerHTML = "";
+  userColors.forEach((color) => {
+    const colorUl = document.createElement("ul");
+    colorUl.classList.add("list-group", "list-group-horizontal");
 
-  return "#" + r + g + b;
+    const colorLi = document.createElement("li");
+    colorLi.classList.add("list-group-item");
+
+    const colorSamp = document.createElement("li");
+    colorSamp.classList.add("color-sample", "list-group-item");
+
+    colorUl.appendChild(colorLi);
+    colorUl.appendChild(colorSamp);
+
+    savedDisplay.appendChild(colorUl);
+
+    colorLi.innerHTML = `name: ${color.name} </br> rgb(${color.r},${color.g},${color.b}) </br> hex(${color.hexNum})`;
+    colorSamp.style.backgroundColor = `rgb(${color.r},${color.g},${color.b})`;
+  });
 }
 
-btnColor.addEventListener("click", createColor);
-function createColor() {
-  const rgbInput = `rgb(`;
-  colorValue = `${redInput.value},${blueInput.value},${greenInput.value}`;
-
-  const hexColor = RGBToHex(
-    Number(redInput.value),
-    Number(greenInput.value),
-    Number(blueInput.value)
-  );
-
-  if (!isColred) {
-    result.innerText = `first color ${rgbInput}${colorValue}) and ${hexColor}`;
-    console.log(colorValue);
-    result.style.backgroundColor = rgbInput + colorValue;
-    isColred = true;
+function previewColor() {
+  if (
+    rInput.value > 255 ||
+    gInput.value > 255 ||
+    bInput.value > 255 ||
+    rInput.value == "" ||
+    gInput.value == "" ||
+    bInput.value == ""
+  ) {
+    alert("you have to type in a number. \nit should not be higher than 255");
   } else {
-    result2.innerText = `second color ${rgbInput}${colorValue}) and ${hexColor}`;
-    result2.style.backgroundColor = rgbInput + colorValue;
-    isColred = false;
+    prevColors.push({
+      r: rInput.value,
+      g: gInput.value,
+      b: bInput.value,
+      hexNum: convertHex(),
+    });
+
+    colorNameInput.value = "";
+    renderCards();
   }
-
-  resetInput();
+}
+function convertHex() {
+  let hexR = Math.abs(rInput.value).toString(16);
+  let hexG = Math.abs(gInput.value).toString(16);
+  let hexB = Math.abs(bInput.value).toString(16);
+  let hexNum = `#${hexR}${hexG}${hexB}`;
+  return hexNum;
 }
 
-function addToFavorite() {
-  myFavoriteColor.push({ colorValue });
-  console.log(myFavoriteColor);
-  localStorage.setItem("color", JSON.stringify(myFavoriteColor));
-  showFavorite.innerText = `my favorite color is: ${JSON.stringify(
-    myFavoriteColor
-  )}`;
+function makeNewColor() {
+  userColors.push(prevColors[prevColors.length - 1]);
+  userColors[userColors.length - 1].name = colorNameInput.value;
+  saveColor();
 }
 
-favorite.addEventListener("click", addToFavorite);
-
-function resetInput() {
-  redInput.value = "";
-  blueInput.value = "";
-  greenInput.value = "";
-  showFavorite.innerText = "";
+function renderCards() {
+  currentColorDisplay.style.backgroundColor = `rgb(${rInput.value},${gInput.value},${bInput.value})`;
+  hexDisplay.innerHTML =
+    `hex value: ` + prevColors[prevColors.length - 1].hexNum;
+  prevColors.length - 2 >= 0
+    ? (previousColorDisplay.style.backgroundColor = `rgb(${
+        prevColors[prevColors.length - 2].r
+      },${prevColors[prevColors.length - 2].g},${
+        prevColors[prevColors.length - 2].b
+      })`)
+    : null;
 }
+
+function saveColor() {
+  localStorage.setItem("userColorsArr", JSON.stringify(userColors));
+}
+
+function getSaved() {
+  if (localStorage.getItem("userColorsArr")) {
+    userColors = JSON.parse(localStorage.getItem("userColorsArr") || []);
+    renderSaved();
+  }
+}
+
+// Events
+
+getSaved();
+
+previewBtn.addEventListener("click", () => {
+  previewColor();
+});
+
+submitBtn.addEventListener(`click`, () => {
+  makeNewColor();
+
+  getSaved();
+});

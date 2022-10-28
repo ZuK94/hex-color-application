@@ -1,22 +1,41 @@
-body {
-  background: #ffffff;
-  font-family: "Lato", sans-serif;
-  transition: background 0.3s;
+input {
+  width: 15rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem !important;
 }
-
-.container {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: center;
+#color-inputs {
+  text-align: center;
+  margin-top: 3rem;
+}
+#color-display {
+  margin-top: 4rem;
+  flex-direction: row;
   justify-content: center;
+}
+.user-display {
+  display: inline-flex;
+  max-width: 60%;
   flex-direction: column;
-  letter-spacing: 0.1em;
+  justify-content: center;
 }
-#btn-change-color {
-  height: 30px;
-  cursor: pointer;
+.user-colors {
+  display: inline-flex;
+  flex-direction: column;
+  max-width: 37%;
+  justify-content: end;
+  align-self: center;
 }
-.result-container {
+#main {
   display: flex;
+  justify-content: space-around;
+}
+.list-group-item {
+  position: absolute;
+  display: flex;
+  width: 25rem;
+  height: auto;
+}
+.color-sample {
+  position: relative;
+  justify-content: end;
 }
